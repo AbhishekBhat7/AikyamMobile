@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "468952368714",
+    "project_id": "aikyam1-67825",
+    "storage_bucket": "aikyam1-67825.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:468952368714:android:c38730e6febe66c18c08b3",
+        "android_client_info": {
+          "package_name": "com.example.aikyamm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "468952368714-gc329uv57l6u34dgq8l0knjo9lnarae1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aikyamm",
+            "certificate_hash": "e04a6b8d1404fc36e287a40d9e07e5489a33ef2d"
+          }
+        },
+        {
+          "client_id": "468952368714-rfro4451f5vrel1jl9i6a2govn667nk6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzl6HrC0v49jDJvZzrAnLgBJQx5wlA6B4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "468952368714-rfro4451f5vrel1jl9i6a2govn667nk6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "468952368714-j9elatf840r10dhimoppiaialn6g5tab.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aikyamm"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

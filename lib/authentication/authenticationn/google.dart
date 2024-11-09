@@ -11,43 +11,42 @@ class GoogleSignInPages extends StatelessWidget {
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
-      // Trigger the authentication flow
+      // Trigger the authentication flow directly
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
+      // If the user canceled the sign-in process, show a cancellation message
       if (googleUser == null) {
-        // User canceled the sign-in
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign-in was canceled')),
+        );
         return;
       }
 
       // Obtain the authentication details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      // Create a new credential
+      // Create a new credential for Firebase authentication
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // Sign in to Firebase with the credential
-      UserCredential userCredential =
-          await firebaseAuth.signInWithCredential(credential);
+      // Sign in to Firebase with the obtained credentials
+      UserCredential userCredential = await firebaseAuth.signInWithCredential(credential);
 
-      // Extract the user's information from the Firebase user object
-      String userEmail = userCredential.user?.email ?? '';
-      String userName = userCredential.user?.displayName ??
-          'User'; // Default to 'User' if no name is set
+      // Extract user's information (email and name)
+      String userEmail = userCredential.user?.email ?? 'No email available';
+      String userName = userCredential.user?.displayName ?? 'No name available';
 
-      // Navigate to the SelectionScreen and pass the user data
+      // After successful login, navigate to the next screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              ChoiceScreen(userId: userCredential.user!.uid),
+          builder: (context) => ChoiceScreen(userId: userCredential.user!.uid),
         ),
       );
     } catch (e) {
-      // Show error message if sign-in fails
+      // Show error message in case of failure
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error during Google Sign-In: $e")),
       );
@@ -59,10 +58,12 @@ class GoogleSignInPages extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Google Sign In')),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () =>
-              signInWithGoogle(context), // Trigger sign-in on button press
-          child: const Text('Sign in with Google'),
+        child: GestureDetector(
+          onTap: () => signInWithGoogle(context), // Directly trigger Google sign-in
+          child: Image.asset(
+            'assets/images/Googles.png', // Google sign-in icon (ensure you have this image)
+            height: 60, // Adjust the size of the icon as needed
+          ),
         ),
       ),
     );

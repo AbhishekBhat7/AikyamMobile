@@ -1,10 +1,8 @@
-import 'package:aikyamm/authentication/authenticationn/dash1.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:intl/intl.dart';
+import 'package:aikyamm/authentication/authenticationn/dash1.dart'; // your dashboard page
 
 void main() {
   runApp(const ProgressApp());
@@ -20,14 +18,13 @@ class ProgressApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: const Color(0xFF8F0000),
       ),
-      // home: const OnboardingScreen(),
+      home: const OnboardingScreen(),
     );
   }
-}
-class OnboardingScreen extends StatefulWidget {
-  final UserCredential userCredential;
+} 
 
-  const OnboardingScreen({super.key, required this.userCredential});
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -35,6 +32,18 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   int currentIndex = 0;
+
+  // Declare data variables
+  String? name = '';
+  String? gender = '';
+  DateTime? dateOfBirth;
+  int? weight;
+  int? height;
+
+  // Declare form validity tracker
+  final List<bool> formValidity = [false, false, false, false, false];
+
+  // Data to pass to each screen
   final List<Widget> screens = [
     const NameInput(),
     const GenderInput(),
@@ -43,15 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     HeightInput(),
   ];
 
-  List<bool> formValidity = [false, false, false, false, false];
-
-  String? name;
-  String? gender;
-  DateTime? dob;
-  int? weight;
-  int? height;
-
-  // To track if the current screen's form is valid
+  // This will be called when "Next" button is pressed
   void nextScreen() {
     if (formValidity[currentIndex]) {
       if (currentIndex < screens.length - 1) {
@@ -71,6 +72,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       setState(() {
         currentIndex--;
       });
+    }
+  }
+
+  // Handle submission logic
+  void submitData() {
+    if (name != null && gender != null && dateOfBirth != null && weight != null && height != null) {
+      try {
+        // Submit the data (replace this with your actual data submission logic)
+        print('User Data Submitted:');
+        print('Name: $name');
+        print('Gender: $gender');
+        print('Date of Birth: ${DateFormat('MM/dd/yyyy').format(dateOfBirth!)}');
+        print('Weight: $weight');
+        print('Height: $height');
+
+        // Navigate to the next page (e.g., Dashboard)
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const Dash()),
+        );
+      } catch (e) {
+        print("Error submitting user data: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error submitting user data')),
+        );
+      }
+    } else {
+      print('Error: One or more fields are null.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete all fields')),
+      );
     }
   }
 
@@ -140,22 +171,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       if (currentIndex == screens.length - 1)
                         GestureDetector(
-                          onTap: () async {
-                            // Collecting all user data and saving it to Firestore
-                            await FirebaseFirestore.instance.collection('usersinfo').doc(widget.userCredential.user!.uid).update({
-                              'name': name,
-                              'gender': gender,
-                              'dob': dob,
-                              'weight': weight,
-                              'height': height,
-                              'onboarding_completed': true, // New field for onboarding status
-                            });
-
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => const Dash()),
-                            );
-                          },
+                          onTap: submitData,
                           child: const CircleAvatar(
                             backgroundColor: Color(0xFF8F0000),
                             radius: 30,
@@ -168,7 +184,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: const CircleAvatar(
                             backgroundColor: Color(0xFF8F0000),
                             radius: 30,
-                            child: Icon(Icons.arrow_forward, color: Colors.white),
+                            child:
+                                Icon(Icons.arrow_forward, color: Colors.white),
                           ),
                         ),
                     ],
@@ -182,16 +199,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
-class NameInput extends StatefulWidget {
+
+class NameInput extends StatelessWidget {
   const NameInput({super.key});
-
-  @override
-  _NameInputState createState() => _NameInputState();
-}
-
-class _NameInputState extends State<NameInput> {
-  final TextEditingController _nameController = TextEditingController();
-  bool _isValid = false;
 
   @override
   Widget build(BuildContext context) {
@@ -200,29 +210,31 @@ class _NameInputState extends State<NameInput> {
         child: Column(
           children: [
             const SizedBox(height: 90),
-            SvgPicture.asset('assets/images/first.svg', height: 200, width: 200),
+            SvgPicture.asset(
+              'assets/images/first.svg',
+              height: 200,
+              width: 200,
+            ),
             const SizedBox(height: 25),
             const Text("How can we remember you?",
                 style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
-                controller: _nameController,
-                style: const TextStyle(color: Color(0xFF8F0000), fontWeight: FontWeight.bold),
+                onChanged: (value) {
+                  (context.findAncestorStateOfType<_OnboardingScreenState>()!)
+                      .name = value; // Save name to parent
+                  (context.findAncestorStateOfType<_OnboardingScreenState>()!)
+                      .formValidity[0] = value.isNotEmpty;
+                },
+                style: const TextStyle(
+                  color: Color(0xFF8F0000),
+                  fontWeight: FontWeight.bold,
+                ),
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Enter Your Name',
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _isValid = value.isNotEmpty;
-                    // Update the value in OnboardingScreen
-                    (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-                        .name = value;
-                    (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-                        .formValidity[0] = _isValid;
-                  });
-                },
               ),
             ),
           ],
@@ -231,6 +243,8 @@ class _NameInputState extends State<NameInput> {
     );
   }
 }
+
+// Gender Input Widget
 class GenderInput extends StatefulWidget {
   const GenderInput({super.key});
 
@@ -246,7 +260,6 @@ class _GenderInputState extends State<GenderInput> {
     return SingleChildScrollView(
       child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 130),
             const Text(
@@ -288,34 +301,33 @@ class _GenderInputState extends State<GenderInput> {
       onTap: () {
         setState(() {
           selectedGender = genderValue;
-          // Update the value in OnboardingScreen
           (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-              .gender = genderValue;
+              .gender = genderValue; // Save gender to parent
           (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-              .formValidity[1] = true;
+              .formValidity[1] = true; // Mark as valid
         });
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Color.fromARGB(255, 252, 224, 224)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            SvgPicture.asset(assetPath, height: 100, width: 100),
-            const SizedBox(height: 10),
-            Text(label,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ],
-        ),
+      child: Column(
+        children: [
+          SvgPicture.asset(
+            assetPath,
+            height: 60,
+            width: 60,
+            color: isSelected ? Colors.red : null,
+          ),
+          const SizedBox(height: 10),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? Colors.red : Colors.grey)),
+        ],
       ),
     );
   }
 }
+
+// Date Input Widget
 class DateInput extends StatefulWidget {
   const DateInput({super.key});
 
@@ -324,38 +336,14 @@ class DateInput extends StatefulWidget {
 }
 
 class _DateInputState extends State<DateInput> {
-  DateTime? selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
   final TextEditingController dateController = TextEditingController();
-
-  bool _isValid = false;
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-        dateController.text = DateFormat('MM/dd/yyyy').format(picked);
-        _isValid = true; // Mark as valid once a date is selected
-        // Update the value in OnboardingScreen
-        (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-            .dob = picked;
-        (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-            .formValidity[2] = _isValid;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 130),
             SvgPicture.asset('assets/images/dob.svg', height: 100, width: 100),
@@ -372,7 +360,24 @@ class _DateInputState extends State<DateInput> {
                   labelText: 'MM/DD/YYYY',
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context),
+                    onPressed: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate,
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null && picked != selectedDate) {
+                        setState(() {
+                          selectedDate = picked;
+                          dateController.text = DateFormat('MM/dd/yyyy').format(picked);
+                          (context.findAncestorStateOfType<_OnboardingScreenState>()!)
+                              .dateOfBirth = selectedDate;
+                          (context.findAncestorStateOfType<_OnboardingScreenState>()!)
+                              .formValidity[2] = true;
+                        });
+                      }
+                    },
                   ),
                 ),
               ),
@@ -383,6 +388,8 @@ class _DateInputState extends State<DateInput> {
     );
   }
 }
+
+// Weight Input Widget
 class WeightInput extends StatefulWidget {
   const WeightInput({super.key});
 
@@ -391,15 +398,13 @@ class WeightInput extends StatefulWidget {
 }
 
 class _WeightInputState extends State<WeightInput> {
-  int weight = 60; // Default weight value
-  bool _isValid = false;
+  int weight = 60;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 130),
             SvgPicture.asset(
@@ -428,12 +433,10 @@ class _WeightInputState extends State<WeightInput> {
               onChanged: (value) {
                 setState(() {
                   weight = value;
-                  _isValid = weight >= 30; // Weight must be valid (greater than or equal to 30)
-                  // Update the value in OnboardingScreen
                   (context.findAncestorStateOfType<_OnboardingScreenState>()!)
                       .weight = weight;
                   (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-                      .formValidity[3] = _isValid;
+                      .formValidity[3] = true;
                 });
               },
             ),
@@ -443,8 +446,10 @@ class _WeightInputState extends State<WeightInput> {
     );
   }
 }
+
+// Height Input Widget
 class HeightInput extends StatefulWidget {
-  int height = 160; // Default height value
+  int height = 160;
 
   HeightInput({super.key}); // Default height value
 
@@ -453,14 +458,11 @@ class HeightInput extends StatefulWidget {
 }
 
 class _HeightInputState extends State<HeightInput> {
-  bool _isValid = false;
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 130),
             SvgPicture.asset(
@@ -489,12 +491,10 @@ class _HeightInputState extends State<HeightInput> {
               onChanged: (value) {
                 setState(() {
                   widget.height = value;
-                  _isValid = widget.height >= 100 && widget.height <= 250; // Height should be within a valid range
-                  // Update the value in OnboardingScreen
                   (context.findAncestorStateOfType<_OnboardingScreenState>()!)
                       .height = widget.height;
                   (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-                      .formValidity[4] = _isValid;
+                      .formValidity[4] = true;
                 });
               },
             ),

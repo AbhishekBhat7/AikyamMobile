@@ -1,12 +1,10 @@
-// import 'package:aikyamm/authentication/authenticationn/homescreens.dart';
+import 'package:aikyamm/service/auth_service.dart';
+import 'package:aikyamm/authentication/authenticationn/homescreens.dart';
 import 'package:aikyamm/authentication/authenticationn/signin.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:aikyamm/authentication/authenticationn/applesignin.dart';
 import 'package:aikyamm/authentication/authenticationn/google.dart';
-
+import 'package:aikyamm/authentication/authenticationn/applesignin.dart';
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
 
@@ -15,28 +13,17 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final _auth = FirebaseAuth.instance;
+  final _authService = AuthService();
   String email = "", password = "", name = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isPasswordHidden = true;
-  bool isLogin = false;
 
-  registration() async {
+  // Handle registration
+  Future<void> registration() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await _auth
-            .createUserWithEmailAndPassword(email: email, password: password);
-
-        // Store user data in Firestore
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set({
-          'name': name,
-          'email': email,
-          'role': '',
-          'created_at': Timestamp.now(),
-        });
+        var userCredential =
+            await _authService.signUpWithEmailPassword(name, email, password);
 
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.green,
@@ -46,31 +33,24 @@ class _SignUpState extends State<SignUp> {
           ),
         ));
 
-        // Wait for a short duration before navigating
+        // Wait before navigating
         await Future.delayed(const Duration(seconds: 1));
 
-        //   Navigator.push(context,
-        //       MaterialPageRoute(builder: (context) => ChoiceScreen(userId: userCredential.user!.uid),));
-        // }
-        Navigator.pushReplacement(
+        // Navigate to ChoiceScreen with the user ID
+        Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          MaterialPageRoute(
+            builder: (context) =>
+                ChoiceScreen(userId: userCredential.user!.uid),
+          ),
         );
-      } on FirebaseAuthException catch (e) {
-        String errorMessage;
-        if (e.code == 'weak-password') {
-          errorMessage = 'Password provided is too weak';
-        } else if (e.code == "email-already-in-use") {
-          errorMessage = 'Account already exists';
-        } else {
-          errorMessage = 'Failed to register: ${e.message}';
-        }
+      } catch (e) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(errorMessage)));
+            .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
-
+  
   Widget _buildToggleButton(BuildContext context,
       {required String title,
       required bool isSelected,
@@ -101,6 +81,8 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+
+  // Rest of the code remains the same
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -143,7 +125,7 @@ class _SignUpState extends State<SignUp> {
                     _buildToggleButton(
                       context,
                       title: 'Log In',
-                      isSelected: isLogin,
+                      isSelected: false,
                       onTap: () {
                         Navigator.pushReplacement(
                           context,
@@ -156,10 +138,8 @@ class _SignUpState extends State<SignUp> {
                     _buildToggleButton(
                       context,
                       title: 'Sign Up',
-                      isSelected: !isLogin,
-                      onTap: () => setState(() {
-                        isLogin = false;
-                      }),
+                      isSelected: true,
+                      onTap: () => setState(() {}),
                     ),
                   ],
                 ),

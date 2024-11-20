@@ -1,10 +1,14 @@
+import 'package:aikyamm/authentication/authenticationn/dash.dart';
+import 'package:aikyamm/authentication/authenticationn/otp1.dart';
 import 'package:aikyamm/service/auth_service.dart';
-import 'package:aikyamm/authentication/authenticationn/homescreens.dart';
 import 'package:aikyamm/authentication/authenticationn/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:aikyamm/authentication/authenticationn/google.dart';
-import 'package:aikyamm/authentication/authenticationn/applesignin.dart';
+// import 'package:aikyamm/authentication/authenticationn/google.dart';
+import 'package:aikyamm/authentication/authenticationn/auth.dart';
+// import 'package:aikyamm/authentication/authenticationn/applesignin.dart';
+
+
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
 
@@ -37,11 +41,17 @@ class _SignUpState extends State<SignUp> {
         await Future.delayed(const Duration(seconds: 1));
 
         // Navigate to ChoiceScreen with the user ID
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) =>
+        //         ChoiceScreen(userId: userCredential.user!.uid),
+        //   ),
+        // );
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ChoiceScreen(userId: userCredential.user!.uid),
+            builder: (context) => OTPScreen(email: email, userId:userCredential.user!.uid,), // Pass email to OTPScreen
           ),
         );
       } catch (e) {
@@ -50,7 +60,35 @@ class _SignUpState extends State<SignUp> {
       }
     }
   }
-  
+
+  // Update _signInWithGoogle method to navigate after completion
+  Future<void> _handleGoogleSignIn(BuildContext context) async {
+    try {
+      await AuthMethods().signInWithGoogle(context); // Wait for sign-in completion
+      // Navigate to Dash after Google sign-in completes
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Dash()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+   // Update _signInWithGoogle method to navigate after completion
+  Future<void> _handleAppleSignIn(BuildContext context) async {
+    try {
+      await  AuthMethods().signInWithApple(); // Wait for sign-in completion
+      // Navigate to Dash after Google sign-in completes
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Dash()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
   Widget _buildToggleButton(BuildContext context,
       {required String title,
       required bool isSelected,
@@ -80,7 +118,6 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
-
 
   // Rest of the code remains the same
   @override
@@ -241,18 +278,12 @@ class _SignUpState extends State<SignUp> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => GoogleSignInPages()),
-          ),
+          onTap: () => _handleGoogleSignIn(context),
           child: _socialButton('assets/images/Googles.png', screenSize),
         ),
         const SizedBox(width: 20),
         GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AppleSignInPage()),
-          ),
+          onTap: () => _handleAppleSignIn(context),
           child: _socialButton('assets/images/Apples.png', screenSize),
         ),
       ],
@@ -263,7 +294,6 @@ class _SignUpState extends State<SignUp> {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        // border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Image.asset(

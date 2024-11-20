@@ -1,4 +1,4 @@
-import 'package:aikyamm/authentication/authenticationn/progress.dart';
+// import 'package:aikyamm/authentication/authenticationn/progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -77,12 +77,12 @@ class ChoiceScreen extends StatelessWidget {
                     .update({
                   'role': 'Athlete',
                 });
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ProgressApp(), 
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => const ProgressApp(), 
+                            //   ),
+                            // );
                           },
                           child: ChoiceCard(
                             title: "Athlete",

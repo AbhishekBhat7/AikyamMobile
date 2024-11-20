@@ -1,8 +1,10 @@
+import 'package:aikyamm/authentication/authenticationn/dash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:intl/intl.dart';
-import 'package:aikyamm/authentication/authenticationn/dash1.dart'; // your dashboard page
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(const ProgressApp());
@@ -21,7 +23,7 @@ class ProgressApp extends StatelessWidget {
       home: const OnboardingScreen(),
     );
   }
-} 
+}
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -76,18 +78,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   // Handle submission logic
-  void submitData() {
+  void submitData() async {
     if (name != null && gender != null && dateOfBirth != null && weight != null && height != null) {
       try {
-        // Submit the data (replace this with your actual data submission logic)
-        print('User Data Submitted:');
-        print('Name: $name');
-        print('Gender: $gender');
-        print('Date of Birth: ${DateFormat('MM/dd/yyyy').format(dateOfBirth!)}');
-        print('Weight: $weight');
-        print('Height: $height');
+        String uid = FirebaseAuth.instance.currentUser!.uid;  // Get current user UID
+        FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'name': name,
+          'gender': gender,
+          'dob': DateFormat('MM/dd/yyyy').format(dateOfBirth!),
+          'weight': weight,
+          'height': height,
+        });
 
-        // Navigate to the next page (e.g., Dashboard)
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const Dash()),
         );
@@ -98,7 +100,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         );
       }
     } else {
-      print('Error: One or more fields are null.');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please complete all fields')),
       );
@@ -200,6 +201,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
+void updateUserData(String field, dynamic value) async {
+  try {
+    String uid = FirebaseAuth.instance.currentUser!.uid;  // Get current user UID
+    FirebaseFirestore.instance.collection('users').doc(uid).update({
+      field: value,
+    });
+  } catch (e) {
+    print("Error updating user data: $e");
+  }
+}
+
+// Name Input Widget
 class NameInput extends StatelessWidget {
   const NameInput({super.key});
 
@@ -223,9 +236,10 @@ class NameInput extends StatelessWidget {
               child: TextField(
                 onChanged: (value) {
                   (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-                      .name = value; // Save name to parent
+                      .name = value;  // Save name to parent
                   (context.findAncestorStateOfType<_OnboardingScreenState>()!)
                       .formValidity[0] = value.isNotEmpty;
+                  updateUserData('name', value);  // Update Firestore with name
                 },
                 style: const TextStyle(
                   color: Color(0xFF8F0000),
@@ -302,9 +316,11 @@ class _GenderInputState extends State<GenderInput> {
         setState(() {
           selectedGender = genderValue;
           (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-              .gender = genderValue; // Save gender to parent
+              .gender = genderValue;
           (context.findAncestorStateOfType<_OnboardingScreenState>()!)
-              .formValidity[1] = true; // Mark as valid
+              .formValidity[1] = true;
+
+          updateUserData('gender', genderValue);  // Update Firestore with gender
         });
       },
       child: Column(
@@ -375,6 +391,7 @@ class _DateInputState extends State<DateInput> {
                               .dateOfBirth = selectedDate;
                           (context.findAncestorStateOfType<_OnboardingScreenState>()!)
                               .formValidity[2] = true;
+                          updateUserData('dob', DateFormat('MM/dd/yyyy').format(picked));  // Update Firestore with DOB
                         });
                       }
                     },
@@ -437,6 +454,7 @@ class _WeightInputState extends State<WeightInput> {
                       .weight = weight;
                   (context.findAncestorStateOfType<_OnboardingScreenState>()!)
                       .formValidity[3] = true;
+                  updateUserData('weight', weight);  // Update Firestore with weight
                 });
               },
             ),
@@ -495,6 +513,7 @@ class _HeightInputState extends State<HeightInput> {
                       .height = widget.height;
                   (context.findAncestorStateOfType<_OnboardingScreenState>()!)
                       .formValidity[4] = true;
+                  updateUserData('height', widget.height);  // Update Firestore with height
                 });
               },
             ),

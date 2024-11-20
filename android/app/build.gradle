@@ -20,6 +20,16 @@ android {
     // ndkVersion = flutter.ndkVersion
     ndkVersion = "25.1.8937393"
 
+    // To make the reduce size
+//     splits {
+//     abi {
+//       enable true
+//       reset()
+//       include 'armeabi-v7a', 'arm64-v8a', 'x86'
+//       universalApk false  // Make sure to disable the universal APK
+//     }
+//   }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -59,6 +69,11 @@ android {
             // so `flutter run --release` works.
             // signingConfig = signingConfigs.debug
             signingConfig = signingConfigs.release
+             // Enables Proguard/R8 for release builds
+            // To make Reduce the Size
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 

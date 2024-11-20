@@ -1,8 +1,6 @@
 import 'package:aikyamm/authentication/authenticationn/applesignin.dart';
+import 'package:aikyamm/authentication/authenticationn/dash.dart';
 import 'package:aikyamm/authentication/authenticationn/google.dart';
-import 'package:aikyamm/authentication/authenticationn/home.dart';
-// import 'package:aikyamm/authentication/authenticationn/signup.dart';
-// import 'package:aikyamm/authentication/authenticationn/signup2.dart';
 import 'package:aikyamm/authentication/authenticationn/signup1.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +9,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Ensure Firebase is initialized before checking auth state
   await Firebase.initializeApp();
+
+  // Optionally, you can explicitly set persistence mode to LOCAL
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);  // Ensure persistence across app launches
+
   runApp(const MyApp());
 }
 
@@ -21,10 +25,34 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: LoginScreen(),
+      home: AuthWrapper(),
     );
   }
-} 
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Ensure Firebase is initialized before listening for auth state changes
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Handle loading state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasData) {
+          // If the user is logged in, navigate to Dash (Dashboard)
+          return const Dash();
+        } else {
+          // If the user is not logged in, show LoginScreen
+          return const LoginScreen();
+        }
+      },
+    );
+  }
+}
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,34 +64,21 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  bool _obscurePassword = true; // Controls password visibility
-  bool _rememberMe = false; // Controls remember me checkbox
+  bool _obscurePassword = true;
+  bool _rememberMe = false;
   bool isLogin = true;
 
   Future<void> signIn(BuildContext context) async {
     try {
       // Sign in with email and password
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-
-      // // Extract user information from FirebaseAuth
-      // String userEmail = userCredential.user?.email ?? '';
-      // String userName = userCredential.user?.displayName ??
-      //     'User'; // Default to 'User' if no name is set
-      //      MaterialPageRoute(
-      //     builder: (context) => SelectionScreen(
-      //       userEmail: userEmail,
-      //       userName: userName,
-      //     ),
-      //   ),
-
-      // Navigate to SelectionScreen and pass the user data
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => ChoiceScreens()),
+        MaterialPageRoute(builder: (context) => const Dash()),
       );
     } on FirebaseAuthException catch (e) {
       String message;
@@ -122,18 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: screenSize.height * 0.25,
                     width: screenSize.width * 0.5,
                   ),
-                  // Positioned(
-                  //   top: 0,
-                  //   right: screenSize.width * 0.05,
-                  //   child: SvgPicture.asset(
-                  //     'assets/images/Vectors.svg',
-                  //     height: screenSize.height * 0.25,
-                  //     width: screenSize.width * 0.25,
-                  //   ),
-                  // ),
                 ],
               ),
-              // const SizedBox(height: 10),
               Text(
                 'Get Started Now',
                 style: TextStyle(
@@ -148,7 +153,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontSize: screenSize.width * 0.04, color: Colors.grey[600]),
               ),
               const SizedBox(height: 20),
-              // Login/Signup Toggle
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -220,7 +224,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              // Login Form Fields
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
@@ -254,8 +257,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-
-              // Forgot Password and Remember me
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -281,8 +282,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Log In Button
               ElevatedButton(
                 onPressed: () {
                   signIn(context);
@@ -300,11 +299,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Divider and "or login with" section
               const Text('Or login with'),
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -319,7 +315,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        // border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Image.asset(
@@ -340,7 +335,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        // border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Image.asset(
@@ -351,7 +345,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 1),
               TextButton(
                 onPressed: () {

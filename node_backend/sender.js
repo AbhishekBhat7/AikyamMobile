@@ -14,8 +14,15 @@ let otp = null;
 let otpEmail = null;
 
 function getEmailHtml(otp) {
-    const template = fs.readFileSync('email-template.html', 'utf8');
-    return template.replace('{{OTP}}', otp);
+    // const template = fs.readFileSync('email-template.html', 'utf8');
+    // return template.replace('{{OTP}}', otp);
+    try {
+        const template = fs.readFileSync('email-template.html', 'utf8');
+        return template.replace('{{OTP}}', otp);
+    } catch (error) {
+        console.error("Error reading email template:", error);
+        throw new Error("Failed to load email template.");
+    }
 }
 
 app.post('/sendOtp', async (req, res) => {
@@ -45,13 +52,16 @@ app.post('/sendOtp', async (req, res) => {
         subject: 'OTP Code for Aikyam ',
         html: getEmailHtml(otp)
     };
-
+    // added 
+    console.log("Generated email content:", mailOptions.html);
     try {
         await transporter.sendMail(mailOptions);
         res.send({ success: true });
     } catch (error) {
         console.error("Error sending email:", error);
         res.send({ success: false, error: error.message });
+        console.log(error.message);
+        
     }
 });
 

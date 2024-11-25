@@ -49,6 +49,10 @@ dependencies:
   flutter_bloc: ^8.1.6
   cloud_functions: ^5.1.4
   the_apple_sign_in: ^1.1.1 
+  percent_indicator: ^4.2.3
+  google_fonts: ^6.2.1
+  flutter_staggered_animations: ^1.1.1
+  font_awesome_flutter: ^10.8.0
   
  
   
@@ -87,6 +91,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/playstoreicon.png
+    - assets/HomeDash/
     - assets\icon\icon.png
     - assets/icon/
 

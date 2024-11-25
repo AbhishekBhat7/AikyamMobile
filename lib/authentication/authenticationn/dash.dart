@@ -1,4 +1,6 @@
-import 'package:aikyamm/authentication/authenticationn/myprofile.dart';
+import 'package:aikyamm/authentication/DashBoards/HomeDashboard/home.dart';
+import 'package:aikyamm/authentication/authenticationn/profilepage.dart';
+// import 'package:aikyamm/authentication/authenticationn/myprofile.dart';
 import 'package:aikyamm/authentication/authenticationn/teampage1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -35,11 +37,11 @@ class _HomePageState extends State<HomePage> {
 
   // List of pages in the bottom navigation bar
   static final List<Widget> _pages = <Widget>[
-    const DashboardPage(),
+    FitnessDashboard(),
     TeamPage(),
     const SprintsPage(),
     const DevicesPage(),
-    const ProfilePage(), // ProfilePage will display user info
+    const Profilepage(), // ProfilePage will display user info
   ];
 
   void _onItemTapped(int index) {
@@ -166,84 +168,84 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
+// class DashboardPage extends StatelessWidget {
+//   const DashboardPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: const LinearGradient(
-                colors: [Colors.redAccent, Colors.orangeAccent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              image: DecorationImage(
-                image: const AssetImage('assets/images/workout.png'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.3), BlendMode.darken),
-              ),
-            ),
-            height: 180,
-            child: Stack(
-              children: [
-                const Positioned(
-                  top: 20,
-                  left: 20,
-                  child: Text(
-                    "My Plan for Today",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const Positioned(
-                  bottom: 20,
-                  left: 20,
-                  child: Text(
-                    "12/18 Complete",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ),
-                Positioned(
-                  right: 65,
-                  top: 80,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        value: 0.67,
-                        color: const Color(0xFF8F0000),
-                        backgroundColor: Colors.grey.withOpacity(0.3),
-                        strokeAlign: 6,
-                        strokeWidth: 10,
-                      ),
-                      const Text(
-                        "67%",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Container(
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(12),
+//               gradient: const LinearGradient(
+//                 colors: [Colors.redAccent, Colors.orangeAccent],
+//                 begin: Alignment.topLeft,
+//                 end: Alignment.bottomRight,
+//               ),
+//               image: DecorationImage(
+//                 image: const AssetImage('assets/images/workout.png'),
+//                 fit: BoxFit.cover,
+//                 colorFilter: ColorFilter.mode(
+//                     Colors.black.withOpacity(0.3), BlendMode.darken),
+//               ),
+//             ),
+//             height: 180,
+//             child: Stack(
+//               children: [
+//                 const Positioned(
+//                   top: 20,
+//                   left: 20,
+//                   child: Text(
+//                     "My Plan for Today",
+//                     style: TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 24,
+//                         fontWeight: FontWeight.bold),
+//                   ),
+//                 ),
+//                 const Positioned(
+//                   bottom: 20,
+//                   left: 20,
+//                   child: Text(
+//                     "12/18 Complete",
+//                     style: TextStyle(color: Colors.white, fontSize: 18),
+//                   ),
+//                 ),
+//                 Positioned(
+//                   right: 65,
+//                   top: 80,
+//                   child: Stack(
+//                     alignment: Alignment.center,
+//                     children: [
+//                       CircularProgressIndicator(
+//                         value: 0.67,
+//                         color: const Color(0xFF8F0000),
+//                         backgroundColor: Colors.grey.withOpacity(0.3),
+//                         strokeAlign: 6,
+//                         strokeWidth: 10,
+//                       ),
+//                       const Text(
+//                         "67%",
+//                         style: TextStyle(
+//                             color: Colors.white,
+//                             fontSize: 24,
+//                             fontWeight: FontWeight.bold),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class SprintsPage extends StatelessWidget {
   const SprintsPage({super.key});

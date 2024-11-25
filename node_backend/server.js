@@ -16,7 +16,7 @@ let otpEmail = null;
 
 function getEmailHtml(otp) {
     const template = fs.readFileSync('email-template.html', 'utf8');
-    // console.log(template);
+    console.log(template);
     
     return template.replace('{{OTP}}', otp);
 }

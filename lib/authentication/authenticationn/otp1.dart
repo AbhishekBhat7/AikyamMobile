@@ -56,7 +56,7 @@ class _OTPScreenState extends State<OTPScreen> {
     });
     try {
       final response = await http.post(
-        Uri.parse('http://172.16.26.122/sendOtp'),
+        Uri.parse('http://10.0.2.2:3000/sendOtp'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'email': email}),
       );
@@ -90,7 +90,7 @@ class _OTPScreenState extends State<OTPScreen> {
       isLoading = true;
     });
     final response = await http.post(
-      Uri.parse('http://172.16.26.122/verifyOtp'),
+      Uri.parse('http://10.0.2.2:3000/verifyOtp'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'email': widget.email, 'userOtp': otp}),
     );
@@ -176,7 +176,7 @@ class _OTPScreenState extends State<OTPScreen> {
                     SizedBox(height: 20),
                     Text("Check your Email", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                     SizedBox(height: 10),
-                    Text("We sent a code to ${widget.email}", style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+                    Text("We sent a code to your email address ${widget.email}", style: TextStyle(fontSize: 16, color: Colors.grey[700])),
                     SizedBox(height: 40),
                     if (otpSent) ...[
                       Row(

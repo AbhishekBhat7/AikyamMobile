@@ -157,3 +157,12 @@ flutter_launcher_icons:
 
 
 AikyamScret : N2O8Q~2X6sLtGA0XIUqsnPTFhfZKmAY_BnGRGdgh( Azure )
+
+
+username and password for the postgresql singleserver.
+name : abhi
+password: Admin123@$%
+
+
+
+again the same problem keep my plan for the day as card and see how this UI is in the image rplicate that to same to code even progress bar and everything and in the top resource see the image and here the cards are small right so make how the UI elemennts are looks like replicate the same. And Top workout plan card as shown in the image make it same as the image and make it also slider

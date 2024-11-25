@@ -1,3 +1,4 @@
+import 'package:aikyamm/authentication/authenticationn/myprofile.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -126,7 +127,8 @@ class ProfileScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              DetailScreen(title: "My Profile"),
+                              // DetailScreen(title: "My Profile"),
+                              ProfilePage(),
                         ),
                       );
                     },

@@ -1,28 +1,33 @@
+import 'package:aikyamm/authentication/DashBoards/Devices/cards.dart';
+import 'package:aikyamm/authentication/DashBoards/HomeDashboard/home.dart';
+import 'package:aikyamm/authentication/Libraries/Colors.dart';
+import 'package:aikyamm/authentication/authenticationn/profilepage.dart';
+import 'package:aikyamm/authentication/authenticationn/teampage1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-void main() {
-  runApp(const Dash());
-}
-
 class Dash extends StatelessWidget {
-  const Dash({super.key});
+  final String userEmail;
+
+  const Dash({super.key, required this.userEmail});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // This removes the debug banner
+      debugShowCheckedModeBanner: false,
       title: 'Dashboard UI',
       theme: ThemeData(
-        primaryColor: const Color(0xFF8F0000),
+        primaryColor: MainColors.primaryColor,
       ),
-      home: const HomePage(),
+      home: HomePage(userEmail: userEmail), // Pass email here
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String userEmail;
+
+  const HomePage({super.key, required this.userEmail});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -31,13 +36,22 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _pages = <Widget>[
-    const DashboardPage(),
-    const TeamsPage(),
-    const SprintsPage(),
-    const DevicesPage(),
-    const ProfilePage(),
-  ];
+  // List of pages in the bottom navigation bar
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the pages and pass the email to ProfilePage directly
+    _pages = <Widget>[
+      FitnessDashboard(),
+      TeamPage(),
+      const SprintsPage(),
+      TimingGateScreen(),
+      // ProfilePage(userEmail: widget.userEmail), // Pass email here
+      ProfilePages(userEmail: widget.userEmail)
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -45,228 +59,169 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Image.asset(
-          'assets/images/logoforsplash.png', // Update with your logo
-          height: 70, // Increased logo size
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.black, size: 30),
-            onPressed: () {},
+  // Handle back button press to show confirmation dialog
+  Future<bool> _onWillPop() async {
+    // Show confirmation dialog when the user presses the back button
+    return (await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit App'),
+        content: const Text('Do you want to exit?'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('No'),
+            onPressed: () {
+              Navigator.of(context).pop(false); // Stay on the current screen
+            },
           ),
-          IconButton(
-            icon:
-                const Icon(Icons.notifications, color: Colors.black, size: 30),
-            onPressed: () {},
+          TextButton(
+            child: const Text('Yes'),
+            onPressed: () {
+              Navigator.of(context).pop(true); // Exit the app
+              // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => SignUpPage()));  // Replace the current page
+            },
           ),
         ],
       ),
-      body: Center(
-        child: AnimatedSwitcher(
-          duration: const Duration(
-              milliseconds: 500), // Duration for smoother transition
-          transitionBuilder: (Widget child, Animation<double> animation) {
-            return FadeTransition(
-                opacity: animation, child: child); // Smooth fade effect
+    )) ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: _onWillPop, // Handle back button press here
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: MainColors.white,
+          elevation: 0,
+           title: SvgPicture.asset(
+           'assets/images/logoforsplash.svg',
+              height: 70,
+             ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search, color: Colors.black, size: 30),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.notifications, color: Colors.black, size: 30),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        body: Center(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            child: _pages.elementAt(_selectedIndex),
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: _selectedIndex == 0
+                  ? SvgPicture.asset(
+                      'assets/images/Home_icon.svg',
+                      width: 34,
+                      height: 34,
+                      color: MainColors.primaryColor,
+                    )
+                  : SvgPicture.asset(
+                      'assets/images/Home_icon.svg',
+                      width: 34,
+                      height: 34,
+                    ),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: _selectedIndex == 1
+                  ? SvgPicture.asset(
+                      'assets/images/Teams_icon.svg',
+                      width: 34,
+                      height: 34,
+                      color: MainColors.primaryColor,
+                    )
+                  : SvgPicture.asset(
+                      'assets/images/Teams_icon.svg',
+                      width: 34,
+                      height: 34,
+                    ),
+              label: 'Teams',
+            ),
+            BottomNavigationBarItem(
+              icon: _selectedIndex == 2
+                  ? SvgPicture.asset(
+                      'assets/images/Workout_icon.svg',
+                      width: 34,
+                      height: 34,
+                      color: MainColors.primaryColor,
+                    )
+                  : SvgPicture.asset(
+                      'assets/images/Workout_icon.svg',
+                      width: 34,
+                      height: 34,
+                    ),
+              label: 'Sprints',
+            ),
+            BottomNavigationBarItem(
+              icon: _selectedIndex == 3
+                  ? SvgPicture.asset(
+                      'assets/images/Devices_icon.svg',
+                      width: 34,
+                      height: 34,
+                      color: MainColors.primaryColor,
+                    )
+                  : SvgPicture.asset(
+                      'assets/images/Devices_icon.svg',
+                      width: 34,
+                      height: 34,
+                    ),
+              label: 'Devices',
+            ),
+            BottomNavigationBarItem(
+              icon: _selectedIndex == 4
+                  ? SvgPicture.asset(
+                      'assets/images/Profile_icon.svg',
+                      width: 34,
+                      height: 34,
+                      color: MainColors.primaryColor,
+                    )
+                  : SvgPicture.asset(
+                      'assets/images/Profile_icon.svg',
+                      width: 34,
+                      height: 34,
+                    ),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: MainColors.primaryColor,
+          unselectedItemColor: hint.customGray,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+              if (_selectedIndex == 4) {
+                // Ensure the ProfilePage receives the correct email
+                _pages[4] = ProfilePages(userEmail: widget.userEmail);
+              }
+            });
           },
-          child: _pages.elementAt(_selectedIndex),
+          type: BottomNavigationBarType.fixed,
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: _selectedIndex == 0
-                ? SvgPicture.asset(
-                    'assets/images/Home_icon.svg',
-                    width: 34,
-                    height: 34,
-                    color:
-                        const Color(0xFF8F0000), // Make icon red when selected
-                  )
-                : SvgPicture.asset(
-                    'assets/images/Home_icon.svg',
-                    width: 34,
-                    height: 34,
-                  ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: _selectedIndex == 1
-                ? SvgPicture.asset(
-                    'assets/images/Teams_icon.svg',
-                    width: 34,
-                    height: 34,
-                    color:
-                        const Color(0xFF8F0000), // Make icon red when selected
-                  )
-                : SvgPicture.asset(
-                    'assets/images/Teams_icon.svg',
-                    width: 34,
-                    height: 34,
-                  ),
-            label: 'Teams',
-          ),
-          BottomNavigationBarItem(
-            icon: _selectedIndex == 2
-                ? SvgPicture.asset(
-                    'assets/images/Workout_icon.svg',
-                    width: 34,
-                    height: 34,
-                    color:
-                        const Color(0xFF8F0000), // Make icon red when selected
-                  )
-                : SvgPicture.asset(
-                    'assets/images/Workout_icon.svg',
-                    width: 34,
-                    height: 34,
-                  ),
-            label: 'Sprints',
-          ),
-          BottomNavigationBarItem(
-            icon: _selectedIndex == 3
-                ? SvgPicture.asset(
-                    'assets/images/Devices_icon.svg',
-                    width: 34,
-                    height: 34,
-                    color:
-                        const Color(0xFF8F0000), // Make icon red when selected
-                  )
-                : SvgPicture.asset(
-                    'assets/images/Devices_icon.svg',
-                    width: 34,
-                    height: 34,
-                  ),
-            label: 'Devices',
-          ),
-          BottomNavigationBarItem(
-            icon: _selectedIndex == 4
-                ? SvgPicture.asset(
-                    'assets/images/Profile_icon.svg',
-                    width: 34,
-                    height: 34,
-                    color:
-                        const Color(0xFF8F0000), // Make icon red when selected
-                  )
-                : SvgPicture.asset(
-                    'assets/images/Profile_icon.svg',
-                    width: 34,
-                    height: 34,
-                  ),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor:
-            const Color(0xFF8F0000), // This controls the text color
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-      ),
     );
   }
 }
 
-class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: const LinearGradient(
-                colors: [Colors.redAccent, Colors.orangeAccent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              image: DecorationImage(
-                image: const AssetImage(
-                    'assets/images/workout.png'), // Add your background image
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.3), BlendMode.darken),
-              ),
-            ),
-            height: 180,
-            child: Stack(
-              children: [
-                const Positioned(
-                  top: 20,
-                  left: 20,
-                  child: Text(
-                    "My Plan for Today",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const Positioned(
-                  bottom: 20,
-                  left: 20,
-                  child: Text(
-                    "12/18 Complete",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ),
-                Positioned(
-                  right: 65,
-                  top: 80,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        value: 0.67, // 67% complete
-                        color: const Color(0xFF8F0000),
-                        backgroundColor: Colors.grey.withOpacity(0.3),
-                        strokeAlign: 6,
-                        strokeWidth: 10, // Bigger progress indicator
-                      ),
-                      const Text(
-                        "67%", // Percentage text inside the progress indicator
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class TeamsPage extends StatelessWidget {
-  const TeamsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text("Teams Page"));
-  }
-}
 
 class SprintsPage extends StatelessWidget {
   const SprintsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("Sprints Page"));
+    return const Center(child: Text("Yet To Come ", style: TextStyle(fontSize: 25, color: MainColors.black),));
   }
 }
 
@@ -276,14 +231,5 @@ class DevicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(child: Text("Devices Page"));
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text("Profile Page"));
   }
 }

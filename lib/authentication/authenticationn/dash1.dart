@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
     TeamPage(),
     const SprintsPage(),
     const DevicesPage(),
-    Profilepage()
+    // Profilepage()
   ];
 
   void _onItemTapped(int index) {

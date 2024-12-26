@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/8d3f0f3f-0e55-4106-9cb3-55f2207dd446/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/Aikyam",
+    "appService.deploySubpath": "."
+}

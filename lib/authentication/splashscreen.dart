@@ -112,14 +112,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         ),
       );
     } else {
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => const LoginScreen()),
-      // );
-         Navigator.pushReplacement(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const Dash(userEmail: 'logo@gmail.com',))
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
+      //    Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => const Dash(userEmail: 'logo@gmail.com',))
+      // );
     }
   }
 

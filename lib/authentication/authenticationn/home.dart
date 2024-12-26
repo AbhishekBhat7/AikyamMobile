@@ -1,4 +1,4 @@
-// import 'package:aikyamm/authentication/authenticationn/progress.dart';
+import 'package:aikyamm/authentication/authenticationn/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -71,12 +71,12 @@ class ChoiceScreen extends StatelessWidget {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => const ProgressApp(),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ProgressApp(),
+                              ),
+                            );
                           },
                           child: ChoiceCard(
                             title: "Athlete",

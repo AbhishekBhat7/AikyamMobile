@@ -1,72 +1,57 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-const fs = require('fs');
-require('dotenv').config(); // Load environment variables
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
 app.use(cors());
 app.use(bodyParser.json());
 
-let otp = null;
-let otpEmail = null;
+const otpStore = {}; // Store OTPs temporarily
 
-function getEmailHtml(otp) {
-    const template = fs.readFileSync('email-template.html', 'utf8');
-    console.log(template);
-    
-    return template.replace('{{OTP}}', otp);
-}
-
-app.post('/sendOtp', async (req, res) => {
-    const email = req.body.email;
-    console.log("Email received:", email);
-    console.log("Received request to send OTP");
-
-    if (!email) {
-        return res.send({ success: false, error: "Email not provided" });
-    }
-
-    otp = Math.floor(100000 + Math.random() * 900000);
-    otpEmail = email;
-
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
-
-    let mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: 'OTP for Aikyam Sports Science',
-        html: getEmailHtml(otp)
-    };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        res.send({ success: true });
-    } catch (error) {
-        console.error("Error sending email:", error);
-        res.send({ success: false, error: error.message });
-    }
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: 'your-email@gmail.com', // Replace with your email
+    pass: 'your-email-password',  // Replace with your email password
+  },
 });
 
-app.post('/verifyOtp', (req, res) => {
-    console.log("Received request to verify OTP");
-    const { email, userOtp } = req.body;
-    if (email === otpEmail && userOtp == otp) {
-        res.send({ verified: true });
+app.post('/send-otp', (req, res) => {
+  const { email } = req.body;
+  const otp = crypto.randomInt(1000, 9999).toString();
+
+  otpStore[email] = otp;
+
+  const mailOptions = {
+    from: 'your-email@gmail.com',
+    to: email,
+    subject: 'Your OTP Code',
+    text: `Your OTP code is: ${otp}`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+      res.status(500).send('Failed to send OTP');
     } else {
-        res.send({ verified: false });
+      console.log('Email sent: ' + info.response);
+      res.status(200).send('OTP sent');
     }
+  });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.post('/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  if (otpStore[email] === otp) {
+    delete otpStore[email];
+    res.status(200).send('OTP verified');
+  } else {
+    res.status(400).send('Invalid OTP');
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
 });

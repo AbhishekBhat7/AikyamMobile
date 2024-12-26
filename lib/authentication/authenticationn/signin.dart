@@ -1,20 +1,17 @@
-import 'dart:async';
-import 'dart:io';
-import 'package:aikyamm/authentication/Cache/db_helper.dart';
-import 'package:aikyamm/authentication/Libraries/Dailogue/success.dart';
-import 'package:aikyamm/authentication/authenticationn/auth5.dart';
-import 'package:aikyamm/authentication/authenticationn/dash.dart';
-import 'package:aikyamm/authentication/authenticationn/forget_pass.dart';
+import 'package:aikyamm/authentication/authenticationn/applesignin.dart';
+import 'package:aikyamm/authentication/authenticationn/google.dart';
 import 'package:aikyamm/authentication/authenticationn/home.dart';
-import 'package:aikyamm/authentication/authenticationn/signup_2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:aikyamm/authentication/authenticationn/signup.dart';
+// import 'package:aikyamm/authentication/authenticationn/signup2.dart';
+import 'package:aikyamm/authentication/authenticationn/signup1.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:aikyamm/authentication/Libraries/Colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -24,37 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: AuthWrapper(),
+      home: LoginScreen(),
     );
   }
-}
-
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Use FirebaseAuth or a custom stream for authentication state
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),  // Stream of user authentication state
-      builder: (context, snapshot) {
-        // Show a loading indicator while waiting for the stream
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        // Check if the user is authenticated
-        if (snapshot.hasData) {
-          // User is logged in, navigate to dashboard
-          return const ChoiceScreens(); // Replace with your main screen (e.g., Dash or Home screen)
-        } else {
-          // No user, navigate to login screen
-          return const LoginScreen();
-        }
-      },
-    );
-  }
-}
+} 
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -66,248 +36,71 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _rememberMe = false;
+  bool _obscurePassword = true; // Controls password visibility
+  bool _rememberMe = false; // Controls remember me checkbox
   bool isLogin = true;
-  bool _dialogShown = false;
+
   Future<void> signIn(BuildContext context) async {
     try {
-      final email = emailController.text.trim();
-      final password = passwordController.text.trim();
-
-      // Make HTTP POST request to the custom API
-      final response = await http.post(
-        Uri.parse('https://demoaikyam.azurewebsites.net/api/login'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'email': email,
-          'password': password,
-        }),
+      // Sign in with email and password
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
 
-      final data = json.decode(response.body);
+      // // Extract user information from FirebaseAuth
+      // String userEmail = userCredential.user?.email ?? '';
+      // String userName = userCredential.user?.displayName ??
+      //     'User'; // Default to 'User' if no name is set
+      //      MaterialPageRoute(
+      //     builder: (context) => SelectionScreen(
+      //       userEmail: userEmail,
+      //       userName: userName,
+      //     ),
+      //   ),
 
-      if (response.statusCode == 200) {
-        // Assuming the token is returned upon successful login
-        String token = data['token'];
-        
-        // Save login state in local database or preferences
-        // await DBHelper().setLoginState(true);
-        await DBHelper().setLoginState(true, email: email);        
-        // Optionally save the token for future use
-        // await DBHelper().setUserToken(token);
-          if (!_dialogShown) {
-           {
-           await _showSuccessDialog(context, "Sign-In Successful!", "You have successfully Signed In!");
-            setState(() {
-              _dialogShown = true;  // Set the flag to true after showing the dialog
-            });
-          }
-          }
-        // Navigate to the Dashboard screen after successful login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Dash(userEmail: email)),
-        );
+      // Navigate to SelectionScreen and pass the user data
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ChoiceScreens()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message;
+      if (e.code == 'user-not-found') {
+        message = 'No user found with that email.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Incorrect password. Please try again.';
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'])),
-        );
+        message = 'Login error: ${e.message}';
       }
-    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        SnackBar(content: Text(message)),
       );
     }
   }
 
-  // Future<void> resetPassword(BuildContext context) async {
-  //   String email = emailController.text.trim();
-  //   if (email.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Please enter your email address.')),
-  //     );
-  //     return;
-  //   }
-
-  //   try {
-  //     // Send reset password request to the API
-  //     final response = await http.post(
-  //       Uri.parse('https://your-api-url.com/reset-password'),
-  //       headers: <String, String>{
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: json.encode({'email': email}),
-  //     );
-
-  //     final data = json.decode(response.body);
-      
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text(data['message'])),
-  //     );
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error: ${e.toString()}')),
-  //     );
-  //   }
-  // }
-
-// handle the dialog box 
-Future<void> _showSuccessDialog(BuildContext context, String title, String message) async {
-  // Show the dialog and wait for it to be dismissed before proceeding
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return SuccessDialog(
-         source: "signIn",
-        title: title,
-        message: message,
-      );
-    },
-  );
-}
-
-Future<void> _handleGoogleLogin(BuildContext context) async {
-  try {
-    // Attempt Google login
-    UserCredential? userCredential = await AuthMethods().signInWithGoogleLogin(context);
-
-    if (userCredential != null) {
-      final email = userCredential.user?.email ?? '';
-      
-      // Check if the user email is not empty
-      if (email.isNotEmpty) {
-        // Successfully logged in, navigate to the Dash screen
-        // DIALOG BOX
-         if (!_dialogShown) {
-           {
-           await _showSuccessDialog(context, "Sign-In Successful!", "You have successfully Signed In!");
-            setState(() {
-              _dialogShown = true;  // Set the flag to true after showing the dialog
-            });
-          }
-          }
-          await DBHelper().setLoginState(true, email: email );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Dash(userEmail: email),
-          ),
-        );
-      } else {
-        // Show an error if email is empty
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Google login failed. Email not found.")),
-        );
-      }
-    } else {
-      // Show error if userCredential is null
+  Future<void> resetPassword(BuildContext context) async {
+    String email = emailController.text.trim();
+    if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Google login failed. Please try again.")),
+        const SnackBar(content: Text('Please enter your email address.')),
       );
-    }
-  } catch (e) {
-    // Catch and display any errors during the login process
-    String errorMessage = 'An unexpected error occurred. Please try again.';
-    
-    if (e is FirebaseAuthException) {
-      // Handle specific FirebaseAuthException errors
-      if (e.code == 'account-exists-with-different-credential') {
-        errorMessage = 'An account already exists with a different credential.';
-      } else if (e.code == 'invalid-credential') {
-        errorMessage = 'The credential is invalid.';
-      } else if (e.code == 'operation-not-allowed') {
-        errorMessage = 'The operation is not allowed. Please try again later.';
-      } else if (e.code == 'user-disabled') {
-        errorMessage = 'This user has been disabled.';
-      } else {
-        errorMessage = 'Firebase error: ${e.message}';
-      }
-    } else if (e is SocketException) {
-      // Handle network errors
-      errorMessage = 'Network error. Please check your internet connection.';
-    } else if (e is TimeoutException) {
-      // Handle timeout errors
-      errorMessage = 'The request timed out. Please try again.';
+      return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(errorMessage)),
-    );
-  }
-}
-
-Future<void> _handleAppleLogin(BuildContext context) async {
-  try {
-    // Attempt Apple login
-    User? user = await AuthMethods().signInWithAppleLogin(context);
-
-    if (user != null) {
-      final email = user.email ?? 'Unknown'; // Use 'Unknown' if email is not available
-
-      // Check if the user email is not empty
-      // Dialog box 
-      if (email.isNotEmpty) {
-        // Successfully logged in, navigate to the Dash screen
-         if (!_dialogShown) {
-           {
-           await _showSuccessDialog(context, "Sign-In Successful!", "You have successfully Signed In!");
-            setState(() {
-              _dialogShown = true;  // Set the flag to true after showing the dialog
-            });
-          }
-          }
-           await DBHelper().setLoginState(true, email: email );    
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Dash(userEmail: email),
-          ),
-        );
-      } else {
-        // Show an error if email is empty
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Apple login failed. Email not found.")),
-        );
-      }
-    } else {
-      // Show error if user is null
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Apple login failed. Please try again.")),
+        const SnackBar(
+            content: Text('Password reset email sent. Check your inbox.')),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.message}')),
       );
     }
-  } catch (e) {
-    // Catch and display any errors during the login process
-    String errorMessage = 'An unexpected error occurred. Please try again.';
-    
-    if (e is FirebaseAuthException) {
-      // Handle specific FirebaseAuthException errors
-      if (e.code == 'account-exists-with-different-credential') {
-        errorMessage = 'An account already exists with a different credential.';
-      } else if (e.code == 'invalid-credential') {
-        errorMessage = 'The credential is invalid.';
-      } else if (e.code == 'operation-not-allowed') {
-        errorMessage = 'The operation is not allowed. Please try again later.';
-      } else if (e.code == 'user-disabled') {
-        errorMessage = 'This user has been disabled.';
-      } else {
-        errorMessage = 'Firebase error: ${e.message}';
-      }
-    } else if (e is SocketException) {
-      // Handle network errors
-      errorMessage = 'Network error. Please check your internet connection.';
-    } else if (e is TimeoutException) {
-      // Handle timeout errors
-      errorMessage = 'The request timed out. Please try again.';
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(errorMessage)),
-    );
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -329,8 +122,18 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                     height: screenSize.height * 0.25,
                     width: screenSize.width * 0.5,
                   ),
+                  // Positioned(
+                  //   top: 0,
+                  //   right: screenSize.width * 0.05,
+                  //   child: SvgPicture.asset(
+                  //     'assets/images/Vectors.svg',
+                  //     height: screenSize.height * 0.25,
+                  //     width: screenSize.width * 0.25,
+                  //   ),
+                  // ),
                 ],
               ),
+              // const SizedBox(height: 10),
               Text(
                 'Get Started Now',
                 style: TextStyle(
@@ -342,9 +145,10 @@ Future<void> _handleAppleLogin(BuildContext context) async {
               Text(
                 'Create an account or log in to explore',
                 style: TextStyle(
-                    fontSize: screenSize.width * 0.04, color: hint.customGray),
+                    fontSize: screenSize.width * 0.04, color: Colors.grey[600]),
               ),
               const SizedBox(height: 20),
+              // Login/Signup Toggle
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -362,8 +166,8 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: isLogin
-                            ? MainColors.primaryColor
-                            : MainColors.transparent,
+                            ? const Color.fromRGBO(143, 0, 0, 1)
+                            : Colors.transparent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                           side: const BorderSide(
@@ -395,8 +199,8 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: !isLogin
-                            ? MainColors.primaryColor
-                            : MainColors.transparent,
+                            ? const Color.fromRGBO(143, 0, 0, 1)
+                            : Colors.transparent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                           side: const BorderSide(
@@ -408,7 +212,7 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                         style: TextStyle(
                           fontSize: screenSize.width * 0.05,
                           fontWeight: FontWeight.bold,
-                          color: !isLogin ? MainColors.white : MainColors.black,
+                          color: !isLogin ? Colors.white : Colors.black,
                         ),
                       ),
                     ),
@@ -416,6 +220,7 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                 ],
               ),
               const SizedBox(height: 20),
+              // Login Form Fields
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
@@ -449,6 +254,8 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                 ),
               ),
               const SizedBox(height: 10),
+
+              // Forgot Password and Remember me
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -467,22 +274,21 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
-                      );
+                      resetPassword(context);
                     },
                     child: const Text('Forgot Password?'),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
+
+              // Log In Button
               ElevatedButton(
                 onPressed: () {
                   signIn(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MainColors.primaryColor,
+                  backgroundColor: const Color.fromRGBO(143, 0, 0, 1),
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -490,22 +296,30 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                 ),
                 child: const Text(
                   'Log In',
-                  style: TextStyle(color:MainColors.white),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
+
+              // Divider and "or login with" section
               const Text('Or login with'),
               const SizedBox(height: 20),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                    GestureDetector(
+                  GestureDetector(
                     onTap: () {
-                      _handleGoogleLogin(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => GoogleSignInPages()),
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
+                        // border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Image.asset(
@@ -517,11 +331,16 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                   const SizedBox(width: 20),
                   GestureDetector(
                     onTap: () {
-                      _handleAppleLogin(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AppleSignInPage()),
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
+                        // border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Image.asset(
@@ -532,6 +351,7 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                   ),
                 ],
               ),
+
               const SizedBox(height: 1),
               TextButton(
                 onPressed: () {

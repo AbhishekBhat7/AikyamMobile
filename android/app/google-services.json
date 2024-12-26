@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "468952368714",
     "project_id": "aikyam1-67825",
-    "storage_bucket": "aikyam1-67825.firebasestorage.app"
+    "storage_bucket": "aikyam1-67825.appspot.com"
   },
   "client": [
     {
@@ -19,14 +19,6 @@
           "android_info": {
             "package_name": "com.example.aikyamm",
             "certificate_hash": "e04a6b8d1404fc36e287a40d9e07e5489a33ef2d"
-          }
-        },
-        {
-          "client_id": "468952368714-oaqpsadrq4gch52ivvtev3rmnpumk5ve.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.aikyamm",
-            "certificate_hash": "2450ed393e89c2027e7f99b972df95398f03fcc3"
           }
         },
         {

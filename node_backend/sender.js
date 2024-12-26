@@ -53,7 +53,7 @@ app.post('/sendOtp', async (req, res) => {
         html: getEmailHtml(otp)
     };
     // added 
-    console.log("Generated email content:", mailOptions.html);
+    // console.log("Generated email content:", mailOptions.html);
     try {
         await transporter.sendMail(mailOptions);
         res.send({ success: true });

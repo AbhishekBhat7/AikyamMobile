@@ -20,6 +20,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.5.3
+  
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -53,6 +54,19 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_staggered_animations: ^1.1.1
   font_awesome_flutter: ^10.8.0
+  flutter_reactive_ble: ^5.3.1
+  permission_handler: ^11.3.1
+  sqflite: ^2.4.1
+  path: ^1.9.0
+  dio: ^5.7.0
+  cached_network_image: ^3.4.1
+  postgres: ^3.4.4
+  flutter_blue_plus: ^1.34.5
+  firebase_crashlytics: ^4.2.0
+  
+
+
+ 
   
  
   
@@ -95,7 +109,8 @@ flutter:
     - assets\icon\icon.png
     - assets/icon/
 
-  
+# dependency_overrides:
+#   rxdart: ^0.27.7  # Ensuring the version that works with cached_network_image
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

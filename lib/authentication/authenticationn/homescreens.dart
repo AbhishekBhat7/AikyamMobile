@@ -315,7 +315,7 @@ class ChoiceScreen extends StatelessWidget {
                        
                             Navigator.pushAndRemoveUntil(
                               context,
-                            MaterialPageRoute(builder: (context) => ProgressApp(userEmail: userEmail)),
+                            MaterialPageRoute(builder: (context) => OnboardingScreen(userEmail: userEmail)),
                            (Route<dynamic> route) => false,  // Clears the stack
                                   );
                           },

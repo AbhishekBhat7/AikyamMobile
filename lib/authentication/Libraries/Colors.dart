@@ -11,19 +11,21 @@ class MainColors {
 
 class AppColors {
   static const Color Success = Colors.green;
-   static const Color Failure = Colors.red;
+  static const Color Failure = Colors.red;
   static const Color blue = Color(0xFF3498db); // Blue
   static const Color secondaryColor = Color(0xFF2ecc71); // Green
   static const Color accentColor = Color(0xFFe74c3c); // Red
   static const Color backgroundColor = Color(0xFFF5F5F5); // Light Gray
   static const Color textColor = Color(0xFF333333); // Dark Gray
+  static const Color yellow = Color.fromARGB(255, 217, 255, 0);
 }
 
 class hint {
   static const Color customGray = Color.fromRGBO(117, 117, 117, 1);
 }
 
-class LinearColors{
+class LinearColors {
   static const Color Red = Colors.green;
 }
+
 class BackgroundColors {}

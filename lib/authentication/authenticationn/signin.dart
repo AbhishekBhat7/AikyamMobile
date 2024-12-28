@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:aikyamm/authentication/Cache/db_helper.dart';
 import 'package:aikyamm/authentication/Libraries/Dailogue/success.dart';
+import 'package:aikyamm/authentication/Libraries/button.dart';
 import 'package:aikyamm/authentication/authenticationn/auth5.dart';
 import 'package:aikyamm/authentication/authenticationn/dash.dart';
 import 'package:aikyamm/authentication/authenticationn/forget_pass.dart';
@@ -14,47 +15,47 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:aikyamm/authentication/Libraries/Colors.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+// void main() {
+//   runApp(const MyApp());
+// }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: AuthWrapper(),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const MaterialApp(
+//       home: AuthWrapper(),
+//     );
+//   }
+// }
 
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
+// class AuthWrapper extends StatelessWidget {
+//   const AuthWrapper({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    // Use FirebaseAuth or a custom stream for authentication state
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),  // Stream of user authentication state
-      builder: (context, snapshot) {
-        // Show a loading indicator while waiting for the stream
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+//   @override
+//   Widget build(BuildContext context) {
+//     // Use FirebaseAuth or a custom stream for authentication state
+//     return StreamBuilder<User?>(
+//       stream: FirebaseAuth.instance.authStateChanges(),  // Stream of user authentication state
+//       builder: (context, snapshot) {
+//         // Show a loading indicator while waiting for the stream
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return const Center(child: CircularProgressIndicator());
+//         }
 
-        // Check if the user is authenticated
-        if (snapshot.hasData) {
-          // User is logged in, navigate to dashboard
-          return const ChoiceScreens(); // Replace with your main screen (e.g., Dash or Home screen)
-        } else {
-          // No user, navigate to login screen
-          return const LoginScreen();
-        }
-      },
-    );
-  }
-}
+//         // Check if the user is authenticated
+//         if (snapshot.hasData) {
+//           // User is logged in, navigate to dashboard
+//           return const ChoiceScreens(); // Replace with your main screen (e.g., Dash or Home screen)
+//         } else {
+//           // No user, navigate to login screen
+//           return const LoginScreen();
+//         }
+//       },
+//     );
+//   }
+// }
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -109,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // Navigate to the Dashboard screen after successful login
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Dash(userEmail: email)),
+          MaterialPageRoute(builder: (context) => HomePage(userEmail: email)),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -122,37 +123,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
-
-  // Future<void> resetPassword(BuildContext context) async {
-  //   String email = emailController.text.trim();
-  //   if (email.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Please enter your email address.')),
-  //     );
-  //     return;
-  //   }
-
-  //   try {
-  //     // Send reset password request to the API
-  //     final response = await http.post(
-  //       Uri.parse('https://your-api-url.com/reset-password'),
-  //       headers: <String, String>{
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: json.encode({'email': email}),
-  //     );
-
-  //     final data = json.decode(response.body);
-      
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text(data['message'])),
-  //     );
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error: ${e.toString()}')),
-  //     );
-  //   }
-  // }
 
 // handle the dialog box 
 Future<void> _showSuccessDialog(BuildContext context, String title, String message) async {
@@ -193,7 +163,7 @@ Future<void> _handleGoogleLogin(BuildContext context) async {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Dash(userEmail: email),
+            builder: (context) => HomePage(userEmail: email),
           ),
         );
       } else {
@@ -263,7 +233,7 @@ Future<void> _handleAppleLogin(BuildContext context) async {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Dash(userEmail: email),
+            builder: (context) => HomePage(userEmail: email),
           ),
         );
       } else {
@@ -477,21 +447,27 @@ Future<void> _handleAppleLogin(BuildContext context) async {
                 ],
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              // ElevatedButton(
+              //   onPressed: () {
+              //     signIn(context);
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: MainColors.primaryColor,
+              //     minimumSize: const Size(double.infinity, 50),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //   ),
+              //   child: const Text(
+              //     'Log In',
+              //     style: TextStyle(color:MainColors.white),
+              //   ),
+              // ),
+              CustomLoginButton(
+                text: 'Log In',
                 onPressed: () {
                   signIn(context);
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: MainColors.primaryColor,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  'Log In',
-                  style: TextStyle(color:MainColors.white),
-                ),
               ),
               const SizedBox(height: 20),
               const Text('Or login with'),

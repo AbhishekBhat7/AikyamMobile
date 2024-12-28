@@ -445,12 +445,12 @@ class TeamDashboard extends StatelessWidget {
                           : "Create teams and add athletes. *Only for Trainers",
               trainers: index == 0 ? "Athlete 1, two, +9" : index == 1 ? "Athlete 1, 2, 3, +34" : '',
               imagePath: index == 0
-                  ? "assets/images/cricket.png"
+                  ? "assets/images/Cricket.jpg"
                   : index == 1
-                      ? "assets/images/fitness.png"
+                      ? "assets/images/fit.jpeg"
                       : index == 2
-                          ? "assets/images/join.png"
-                          : "assets/images/fitness.png",
+                          ? "assets/images/join1.jpeg"
+                          : "assets/images/teaam.jpeg",
               onTap: () {
                 Navigator.push(
                   context,

@@ -108,18 +108,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => Dash(userEmail: email),
+          builder: (context) => HomePage(userEmail: email),
         ),
       );
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-      //    Navigator.pushReplacement(
+      // Navigator.pushReplacement(
       //   context,
-      //   MaterialPageRoute(builder: (context) => const Dash(userEmail: 'logo@gmail.com',))
+      //   MaterialPageRoute(builder: (context) => const LoginScreen()),
       // );
+         Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage(userEmail: 'logo@gmail.com',))
+      );
     }
   }
 
@@ -161,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               fit: BoxFit.contain,
             ),
           ),
-
+  
           // Centered logo with animation
           Center(
             child: FadeTransition(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:aikyamm/authentication/Cache/db_helper.dart';
 import 'package:aikyamm/authentication/Libraries/Colors.dart';
 import 'package:aikyamm/authentication/Libraries/Dailogue/success.dart';
+import 'package:aikyamm/authentication/Libraries/button.dart';
 import 'package:aikyamm/authentication/authenticationn/homescreens.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:aikyamm/authentication/authenticationn/otp1.dart';
 import 'package:aikyamm/authentication/authenticationn/signin.dart';
 import 'package:aikyamm/authentication/authenticationn/auth4.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+// import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -456,23 +457,30 @@ Future<void> _handleAppleSignIn(BuildContext context) async {
                       : null,
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
+                // ElevatedButton(
+                //   onPressed: () {
+                //     _formKey.currentState!.save();
+                //     registration();
+                //   },
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: MainColors.primaryColor,
+                //     minimumSize: const Size(double.infinity, 50),
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //   ),
+                //   child: const Text(
+                //     'Sign Up',
+                //     style: TextStyle(color: MainColors.white),
+                //   ),
+                // ),
+                  CustomLoginButton(
+                text: 'Sign Up',
+                onPressed: () {
                     _formKey.currentState!.save();
                     registration();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: MainColors.primaryColor,
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    'Sign Up',
-                    style: TextStyle(color: MainColors.white),
-                  ),
-                ),
+                },
+              ),
                 const SizedBox(height: 20),
                 const Text('Or continue with'),
                 const SizedBox(height: 20),

@@ -6,22 +6,22 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class ProgressApp extends StatelessWidget {
-  final String userEmail;
+// class ProgressApp extends StatelessWidget {
+//   final String userEmail;
 
-  const ProgressApp({super.key, required this.userEmail});
+//   const ProgressApp({super.key, required this.userEmail});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Onboarding Flow',
-      theme: ThemeData(
-        primaryColor: const Color(0xFF8F0000),
-      ),
-      home: OnboardingScreen(userEmail: userEmail),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Onboarding Flow',
+//       theme: ThemeData(
+//         primaryColor: const Color(0xFF8F0000),
+//       ),
+//       home: OnboardingScreen(userEmail: userEmail),
+//     );
+//   }
+// }
 
 class OnboardingScreen extends StatefulWidget {
   final String userEmail;  // Pass the email here
@@ -98,7 +98,7 @@ void submitData() async {
       if (response.statusCode == 200) {
         // Success
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => Dash(userEmail: widget.userEmail)),
+          MaterialPageRoute(builder: (context) => HomePage(userEmail: widget.userEmail)),
           (Route<dynamic> route) => false,  // This ensures the stack is cleared
         );
       } else {

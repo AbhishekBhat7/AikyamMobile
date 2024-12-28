@@ -774,19 +774,8 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
-  runApp(FitnessApp());
-}
 
-class FitnessApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: FitnessDashboard(), 
-    );
-  }
-}
+
 
 class FitnessDashboard extends StatelessWidget {
   // final PageController _pageController = PageController(viewportFraction: 0.85);

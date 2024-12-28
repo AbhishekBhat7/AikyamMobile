@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // Navigate to the Dashboard screen after successful login
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Dash(userEmail: email)),
+          MaterialPageRoute(builder: (context) => HomePage(userEmail: email)),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -193,7 +193,7 @@ Future<void> _handleGoogleLogin(BuildContext context) async {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Dash(userEmail: email),
+            builder: (context) => HomePage(userEmail: email),
           ),
         );
       } else {
@@ -263,7 +263,7 @@ Future<void> _handleAppleLogin(BuildContext context) async {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Dash(userEmail: email),
+            builder: (context) => HomePage(userEmail: email),
           ),
         );
       } else {

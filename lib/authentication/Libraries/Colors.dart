@@ -26,6 +26,7 @@ class hint {
 
 class LinearColors {
   static const Color Red = Colors.green;
+  static const Color Mixer = Color(0xFFD32F2F);
 }
 
 class BackgroundColors {}

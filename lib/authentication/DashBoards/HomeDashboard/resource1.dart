@@ -1,65 +1,4 @@
-// import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
-// // Workout Detail Page
-// class WorkoutDetailPage extends StatelessWidget {
-//   final String title;
-//   final String imagePath;
-//   final String kcal;
-//   final String time;
-//   final String description;
-
-//   const WorkoutDetailPage({
-//     required this.title,
-//     required this.imagePath,
-//     required this.kcal,
-//     required this.time,
-//     required this.description,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text(title)),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // Displaying the image
-//             ClipRRect(
-//               borderRadius: BorderRadius.circular(16),
-//               child: Image.asset(imagePath, fit: BoxFit.cover),
-//             ),
-//             SizedBox(height: 12),
-//             // Displaying title, kcal, time, and description
-//             Text(
-//               title,
-//               style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold),
-//             ),
-//             SizedBox(height: 8),
-//             Row(
-//               children: [
-//                 Icon(Icons.local_fire_department, color: Colors.orangeAccent),
-//                 SizedBox(width: 6),
-//                 Text(kcal, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-//                 SizedBox(width: 12),
-//                 Icon(Icons.access_time, color: Colors.lightBlueAccent),
-//                 SizedBox(width: 6),
-//                 Text(time, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-//               ],
-//             ),
-//             SizedBox(height: 12),
-//             Text(
-//               description,
-//               style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+import 'package:aikyamm/authentication/Libraries/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -83,7 +22,7 @@ class WorkoutDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: AppColors.blue,
         elevation: 0,
         title: Text(
           title,
@@ -110,7 +49,7 @@ class WorkoutDetailPage extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black26,
+                        color: MainColors.black,
                         blurRadius: 10,
                         offset: Offset(0, 4),
                       ),
@@ -157,7 +96,7 @@ class WorkoutDetailPage extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
+                      color: AppColors.blue,
                     ),
                   ),
                   SizedBox(height: 10),
@@ -170,7 +109,7 @@ class WorkoutDetailPage extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color:MainColors.black,
                     ),
                   ),
                   SizedBox(height: 10),
@@ -178,7 +117,7 @@ class WorkoutDetailPage extends StatelessWidget {
                     "This is a specially designed workout to help you achieve your fitness goals effectively. It includes a mix of strength training, cardio, and flexibility exercises tailored for a balanced approach.",
                     style: GoogleFonts.poppins(
                       fontSize: 14,
-                      color: Colors.grey[700],
+                      color: hint.customGray,
                     ),
                     textAlign: TextAlign.justify,
                   ),
@@ -201,7 +140,7 @@ class WorkoutDetailPage extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 15),
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: AppColors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -211,7 +150,7 @@ class WorkoutDetailPage extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: AppColors.backgroundColor,
                   ),
                 ),
               ),
@@ -228,14 +167,14 @@ class WorkoutDetailPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.deepPurple, size: 20),
+          Icon(icon, color: AppColors.blue, size: 20),
           SizedBox(width: 10),
           Text(
             "$label:",
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: Colors.black87,
+              color: MainColors.black,
             ),
           ),
           Spacer(),
@@ -244,7 +183,7 @@ class WorkoutDetailPage extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.deepPurple,
+              color: AppColors.blue,
             ),
           ),
         ],

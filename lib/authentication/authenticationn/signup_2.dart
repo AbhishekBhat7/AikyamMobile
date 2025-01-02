@@ -133,52 +133,6 @@ Future<void> _showSuccessDialog(BuildContext context, String title, String messa
     }
   }
   
-
-// Future<void> _handleGoogleSignIn(BuildContext context) async {
-  
-//   try {
-//     final registrationStatus = await AuthMethods().signInWithGoogle(context);
-
-//     if (registrationStatus == 'success') {
-//       if (!_dialogShown) {
-//         await _showSuccessDialog(context, "SignUp Successfull!!", "You have successfully Signed Up");
-//         setState(() {
-//           _dialogShown = true;
-//         });
-//       }
-
-//       final email = FirebaseAuth.instance.currentUser?.email ?? '';
-
-//       await DBHelper().setLoginState(true, email: email);
-      
-//       Navigator.pushReplacement(
-//         context,
-//         MaterialPageRoute(
-//           builder: (context) => ChoiceScreen(
-//             userEmail: email,
-//             userData: {},
-//           ),
-//         ),
-//       );
-//     } else if (registrationStatus == 'user_exists') {
-//       if (!_dialogShown) {
-//         await _showSuccessDialog(context, "Account exists!", "Please Login!");
-//         setState(() {
-//           _dialogShown = true;
-//         });
-//       }
-
-//     } else {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text("Registration failed. Please try again.")),
-//       );
-//     }
-//   } catch (e) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text("Google sign-in failed. Please try again. ")),
-//     );
-//   }
-// }
 Future<void> _handleGoogleSignIn(BuildContext context) async {
   try {
     final registrationStatus = await AuthMethods().signInWithGoogle(context);

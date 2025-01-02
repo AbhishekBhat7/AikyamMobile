@@ -175,3 +175,15 @@ look at the code and make this code working like nrf connect there the arrows ar
 look at this code and look at nrf connect so there see how the arrows are kept dynamically like uparrow, downarrow, insome case both if necessary and if  i had clicked on the downarrow means read operation there i got when i click on the downarrow is properties, values . So similarly give me the code to work like a nrf connect. So this is the code so please give me updated full working code 
 
 this is in the nrf connect Service Changed , uUid: 0x2a05, propertie: indicate if we click the arrow near this card in the nrf connect then the here its descriptor Cards uuid:0x2902 and this value will be updated value:indication enabled so please make this type of updated code 
+
+
+here in this Signup code also you have to convert to bloc but dont change the any functions or UI or working and give everything in one code and seperated by comments
+
+
+here in this ForgotPasswordScreen code also you have to convert to bloc but dont change the any functions or UI or working and give everything in one code and seperated by comments and give me the full code with working and dont give any exceptions
+
+
+storePassword=123456
+keyPassword=123456
+keyAlias=upload
+storeFile=C:/Users/AbhishekBhat/upload-keystore.jks

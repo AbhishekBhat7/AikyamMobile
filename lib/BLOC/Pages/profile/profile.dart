@@ -1,9 +1,89 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aikyamm/authentication/Cache/db_helper.dart';
 import 'package:aikyamm/authentication/Libraries/Colors.dart';
 import 'package:aikyamm/authentication/authenticationn/myprofile.dart';
 import 'package:aikyamm/authentication/authenticationn/signin.dart';
-import 'package:flutter/material.dart';
+import 'package:equatable/equatable.dart';
 
+// --- BLoC Events ---
+abstract class ProfileEvent extends Equatable {
+  const ProfileEvent();
+}
+
+class LoadProfileEvent extends ProfileEvent {
+  final String userEmail;
+
+  const LoadProfileEvent(this.userEmail);
+
+  @override
+  List<Object?> get props => [userEmail];
+}
+
+class LogoutEvent extends ProfileEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+// --- BLoC States ---
+abstract class ProfileState extends Equatable {
+  const ProfileState();
+}
+
+class ProfileInitialState extends ProfileState {
+  @override
+  List<Object?> get props => [];
+}
+
+class ProfileLoadedState extends ProfileState {
+  final String userEmail;
+
+  const ProfileLoadedState(this.userEmail);
+
+  @override
+  List<Object?> get props => [userEmail];
+}
+
+class ProfileLogoutState extends ProfileState {
+  @override
+  List<Object?> get props => [];
+}
+
+class ProfileErrorState extends ProfileState {
+  final String error;
+
+  const ProfileErrorState(this.error);
+
+  @override
+  List<Object?> get props => [error];
+}
+
+// --- BLoC Logic ---
+class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+  ProfileBloc() : super(ProfileInitialState());
+
+  @override
+  Stream<ProfileState> mapEventToState(ProfileEvent event) async* {
+    if (event is LoadProfileEvent) {
+      try {
+        yield ProfileLoadedState(event.userEmail);
+      } catch (error) {
+        yield ProfileErrorState('Failed to load profile');
+      }
+    }
+
+    if (event is LogoutEvent) {
+      try {
+        await DBHelper().setLoginState(false, email: null);
+        yield ProfileLogoutState();
+      } catch (error) {
+        yield ProfileErrorState('Failed to log out');
+      }
+    }
+  }
+}
+
+// --- ProfilePages (Main Widget) ---
 class ProfilePages extends StatelessWidget {
   final String userEmail;
 
@@ -11,10 +91,14 @@ class ProfilePages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProfileScreen(userEmail: userEmail); // Pass userEmail to ProfileScreen
+    return BlocProvider(
+      create: (context) => ProfileBloc()..add(LoadProfileEvent(userEmail)),
+      child: ProfileScreen(userEmail: userEmail),
+    );
   }
 }
-  
+
+// --- ProfileScreen (UI with BLoC integration) ---
 class ProfileScreen extends StatelessWidget {
   final String userEmail;
 
@@ -23,20 +107,40 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor, // Light background color
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            _buildProfileSection(),
-            SizedBox(height: 25),
-            _buildUserStats(),
-            SizedBox(height: 30),
-            _buildProfileMenu(context),
-          ],
-        ),
+      backgroundColor: AppColors.backgroundColor,
+      body: BlocConsumer<ProfileBloc, ProfileState>(
+        listener: (context, state) {
+          if (state is ProfileLogoutState) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is ProfileLoadedState) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  _buildProfileSection(),
+                  SizedBox(height: 25),
+                  _buildUserStats(),
+                  SizedBox(height: 30),
+                  _buildProfileMenu(context),
+                ],
+              ),
+            );
+          } else if (state is ProfileErrorState) {
+            return Center(
+              child: Text(state.error),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
@@ -55,8 +159,8 @@ class ProfileScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: [
-                    Color.fromRGBO(143, 0, 0, 1), // Deep red
-                    Color.fromRGBO(255, 87, 34, 1), // Warm orange
+                    Color.fromRGBO(143, 0, 0, 1),
+                    Color.fromRGBO(255, 87, 34, 1),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -103,9 +207,9 @@ class ProfileScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildStatItem(Icons.directions_walk, "1,243", "Steps",MainColors.primaryColor),
+        _buildStatItem(Icons.directions_walk, "1,243", "Steps", MainColors.primaryColor),
         _buildStatItem(Icons.favorite, "50", "bpm", AppColors.accentColor),
-        _buildStatItem(Icons.water_drop, "1,345", "ml", AppColors.secondaryColor), // Teal color
+        _buildStatItem(Icons.water_drop, "1,345", "ml", AppColors.secondaryColor),
       ],
     );
   }
@@ -120,7 +224,7 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w600,
-            color:MainColors.black,
+            color: MainColors.black,
           ),
         ),
         SizedBox(height: 4),
@@ -128,7 +232,7 @@ class ProfileScreen extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12,
-            color:hint.customGray, // Light gray text
+            color: hint.customGray,
           ),
         ),
       ],
@@ -214,27 +318,15 @@ class ProfileScreen extends StatelessWidget {
           icon: Icons.logout_outlined,
           text: "Log Out",
           onTap: () {
-              logout(context);
+            BlocProvider.of<ProfileBloc>(context).add(LogoutEvent());
           },
         ),
       ],
     );
   }
-
-
-Future<void> logout(BuildContext context) async {
-  // Set the login state to false (logged out)
-  await DBHelper().setLoginState(false, email: null);
-
-  // Navigate to the signup screen after logging out
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => LoginScreen()), // Replace with your Signup screen widget
-  );
 }
 
-}
-
+// --- ProfileMenuItem Widget ---
 class ProfileMenuItem extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -249,18 +341,11 @@ class ProfileMenuItem extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: MainColors.white, 
+          color: MainColors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              // color: MainColors.black,
-              // blurRadius: 8,
-              // offset: Offset(0, 4),
-            ),
-          ],
         ),
         child: ListTile(
-          leading: Icon(icon, color: MainColors.primaryColor), // Deep red for icons
+          leading: Icon(icon, color: MainColors.primaryColor),
           title: Text(
             text,
             style: TextStyle(
@@ -276,6 +361,7 @@ class ProfileMenuItem extends StatelessWidget {
   }
 }
 
+// --- DetailScreen Widget ---
 class DetailScreen extends StatelessWidget {
   final String title;
 
@@ -286,7 +372,7 @@ class DetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        backgroundColor:MainColors.primaryColor, // Deep red
+        backgroundColor: MainColors.primaryColor,
       ),
       body: Center(
         child: Text(
@@ -296,4 +382,17 @@ class DetailScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+// --- Logout logic ---
+// Call logout in BLoC (already handled in the BLoC)
+Future<void> logout(BuildContext context) async {
+  // Set the login state to false (logged out)
+  await DBHelper().setLoginState(false, email: null);
+
+  // Navigate to the signup screen after logging out
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => LoginScreen()), // Replace with your Signup screen widget
+  );
 }

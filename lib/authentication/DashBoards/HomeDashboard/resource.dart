@@ -1,3 +1,4 @@
+import 'package:aikyamm/authentication/Libraries/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,10 +20,10 @@ class ResourceDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey[50],
+      backgroundColor:AppColors.backgroundColor,
       appBar: AppBar(
         title: Text('Resource Details'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: AppColors.blue,
         elevation: 0,
       ),
       body: SafeArea(
@@ -62,7 +63,7 @@ class ResourceDetailPage extends StatelessWidget {
                       child: Text(
                         title,
                         style: GoogleFonts.lato(
-                          color: Colors.black,
+                          color: MainColors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 28,
                         ),
@@ -76,26 +77,26 @@ class ResourceDetailPage extends StatelessWidget {
                       secondChild: Row(
                         children: [
                           Icon(Icons.local_fire_department,
-                              color: Colors.orangeAccent, size: 28),
+                              color: AppColors.accentColor, size: 28),
                           SizedBox(width: 10),
                           Text(
                             kcal,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: MainColors.black,
                             ),
                           ),
                           SizedBox(width: 20),
                           Icon(Icons.access_time,
-                              color: Colors.lightBlueAccent, size: 28),
+                              color: AppColors.blue, size: 28),
                           SizedBox(width: 10),
                           Text(
                             time,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: MainColors.black,
                             ),
                           ),
                         ],
@@ -116,7 +117,7 @@ class ResourceDetailPage extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: MainColors.black,
                             ),
                           ),
                           SizedBox(height: 10),
@@ -124,7 +125,7 @@ class ResourceDetailPage extends StatelessWidget {
                             description,
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black54,
+                              color: MainColors.black,
                               height: 1.5,
                             ),
                           ),
@@ -144,7 +145,7 @@ class ResourceDetailPage extends StatelessWidget {
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orangeAccent,
+                          backgroundColor: AppColors.accentColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

@@ -6,7 +6,6 @@ import 'package:aikyamm/authentication/Libraries/button.dart';
 import 'package:aikyamm/authentication/authenticationn/auth5.dart';
 import 'package:aikyamm/authentication/authenticationn/dash.dart';
 import 'package:aikyamm/authentication/authenticationn/forget_pass.dart';
-import 'package:aikyamm/authentication/authenticationn/home.dart';
 import 'package:aikyamm/authentication/authenticationn/signup_2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,48 +13,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:aikyamm/authentication/Libraries/Colors.dart';
-
-// void main() {
-//   runApp(const MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const MaterialApp(
-//       home: AuthWrapper(),
-//     );
-//   }
-// }
-
-// class AuthWrapper extends StatelessWidget {
-//   const AuthWrapper({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Use FirebaseAuth or a custom stream for authentication state
-//     return StreamBuilder<User?>(
-//       stream: FirebaseAuth.instance.authStateChanges(),  // Stream of user authentication state
-//       builder: (context, snapshot) {
-//         // Show a loading indicator while waiting for the stream
-//         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return const Center(child: CircularProgressIndicator());
-//         }
-
-//         // Check if the user is authenticated
-//         if (snapshot.hasData) {
-//           // User is logged in, navigate to dashboard
-//           return const ChoiceScreens(); // Replace with your main screen (e.g., Dash or Home screen)
-//         } else {
-//           // No user, navigate to login screen
-//           return const LoginScreen();
-//         }
-//       },
-//     );
-//   }
-// }
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

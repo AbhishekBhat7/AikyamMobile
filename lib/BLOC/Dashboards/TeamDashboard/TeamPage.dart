@@ -1,9 +1,61 @@
+// Import statements
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+// TeamDashboardEvent (BLoC Event)
+abstract class TeamDashboardEvent {}
+class LoadTeamDashboard extends TeamDashboardEvent {}
+
+// TeamDashboardState (BLoC State)
+abstract class TeamDashboardState {}
+class TeamDashboardInitial extends TeamDashboardState {}
+class TeamDashboardLoaded extends TeamDashboardState {}
+
+// TeamDashboardBloc (BLoC Logic)
+class TeamDashboardBloc extends Bloc<TeamDashboardEvent, TeamDashboardState> {
+  TeamDashboardBloc() : super(TeamDashboardInitial()) {
+    on<LoadTeamDashboard>((event, emit) {
+      emit(TeamDashboardLoaded());
+    });
+  }
+}
+
+// Main App Entry
+void main() {
+  runApp(
+    BlocProvider(
+      create: (context) => TeamDashboardBloc()..add(LoadTeamDashboard()),
+      child: const MyApp(),
+    ),
+  );
+} 
+
+// MyApp Widget
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: BlocBuilder<TeamDashboardBloc, TeamDashboardState>(
+        builder: (context, state) {
+          if (state is TeamDashboardLoaded) {
+            return const TeamDashboard();
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
+  }
+}
+
+// TeamDashboard Widget (UI remains unchanged)
 class TeamDashboard extends StatelessWidget {
   const TeamDashboard({super.key});
 
-  // A single function to generate the cards dynamically
+  // Function to create dynamic team cards
   Widget createTeamCard({
     required String title,
     required String description,
@@ -159,6 +211,8 @@ class TeamDashboard extends StatelessWidget {
   }
 }
 
+// Other Pages (Unchanged)
+
 class TeamDetailPage extends StatelessWidget {
   const TeamDetailPage({super.key});
 
@@ -199,6 +253,8 @@ class TeamDetailPage extends StatelessWidget {
     );
   }
 }
+
+// Remaining pages (JoinTeamPage and CreateTeamPage) remain the same as in the original code.
 
 class JoinTeamPage extends StatelessWidget {
   const JoinTeamPage({super.key});
